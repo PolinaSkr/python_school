@@ -51,7 +51,7 @@ def update_molecule(identifier: str, smiles: str):
     if identifier not in molecules_db:
         raise HTTPException(status_code=404, detail="Molecule not found in database")
     molecules_db[identifier] = smiles
-    return
+    return {"message": "Molecule updated successfully"}
 
 
 @app.delete("/delete_molecule/{identifier}", status_code=200,
