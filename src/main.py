@@ -17,6 +17,12 @@ def substructure_search(mols: list, mol: str):
     return [m for m in mols if Chem.MolFromSmiles(m).HasSubstructMatch(mol)]
 
 
+def add_molecule_to_db(identifier: str, smiles: str):
+    if identifier in molecules_db:
+        raise HTTPException(status_code=400, detail="Identifier already exists in database")
+    molecules_db[identifier] = smiles
+    return {"message": "Molecule successfully added in database"}
+
 # res = substructure_search(["CCO", "c1ccccc1", "CC(=O)O", "CC(=O)Oc1ccccc1C(=O)O"], "c1ccccc1")
 # print(res)
 
@@ -28,10 +34,7 @@ molecules_db = {}
 @app.post("/add_molecule/", status_code=201,
           response_description="Add a new molecule in database", tags=["Database editing"])
 def add_molecule(identifier: str, smiles: str):
-    if identifier in molecules_db:
-        raise HTTPException(status_code=400, detail="Identifier already exists in database")
-    molecules_db[identifier] = smiles
-    return {"message": "Molecule successfully added in database"}
+    return add_molecule_to_db(identifier, smiles)
 
 
 @app.get("/get_molecule/{identifier}", status_code=200,
@@ -91,9 +94,9 @@ def upload_molecules(file_path: str):
 
     smiles_list = df['smiles'].tolist()
     added_molecules = 0
-    for i in range(len(identifier_list)):
+    for ind, smiles in zip(identifier_list, smiles_list):
         try:
-            add_molecule(identifier_list[i], smiles_list[i])
+            add_molecule_to_db(ind, smiles)
             added_molecules += 1
         except HTTPException as e:
             if e.status_code == 400:
