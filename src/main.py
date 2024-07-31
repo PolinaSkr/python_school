@@ -1,5 +1,4 @@
 import distutils
-import rdkit
 import fastapi
 from rdkit import Chem
 from fastapi import FastAPI, HTTPException
@@ -24,7 +23,8 @@ def add_molecule_to_db(identifier: str, smiles: str):
     return {"message": "Molecule successfully added in database"}
 
 # res = substructure_search(["CCO", "c1ccccc1", "CC(=O)O", "CC(=O)Oc1ccccc1C(=O)O"], "c1ccccc1")
-# print(res)
+# expected_result = ["c1ccccc1", "CC(=O)Oc1ccccc1C(=O)O"]
+# assert res == expected_result, f"Test failed: {res} != {expected_result}"
 
 app = FastAPI()
 
